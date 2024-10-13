@@ -1,0 +1,110 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1b1b1b;
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    border-radius: 10px;
+}
+
+/* 油门滑块放置在左下角，垂直滑动 */
+.throttle-container {
+    position: absolute;
+    left: 20px;
+    bottom: 40px;
+    height: 240px;
+    width: 60px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: center;
+}
+
+.throttle-input {
+    appearance: none;
+    width: 240px;
+    height: 60px;
+    writing-mode: bt-lr; /* 垂直滑动 */
+    transform: rotate(90deg); /* 旋转滑块使其竖直显示 */
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.throttle-input::-webkit-slider-thumb {
+    appearance: none;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.throttle-value {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 10px;
+}
+
+/* 左右转按钮放置在右下角 */
+.btn-container {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 200px;
+    width: 240px;
+}
+
+.btn-container .btn {
+    width: 100px;
+    height: 90px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-container .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 左右箭头图标样式 */
+.btn-container .left-btn::before {
+    content: '\2190'; /* 左箭头 */
+    font-size: 2.5rem;
+    color: white;
+}
+
+.btn-container .right-btn::before {
+    content: '\2192'; /* 右箭头 */
+    font-size: 2.5rem;
+    color: white;
+}

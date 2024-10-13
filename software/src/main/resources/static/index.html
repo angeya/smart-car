@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+
+<script type="text/javascript">
+    // 断连重试
+    const webSocket = new WebSocket("ws://localhost:8080/ws");
+
+    webSocket.onopen = () => {
+        console.log("Connection established.");
+        webSocket.send("Hello Server!");
+    };
+
+    webSocket.onmessage = () => {
+        console.log("Received message: " + event.data);
+    };
+
+    webSocket.onclose = () => {
+        console.log("Connection closed.");
+    };
+</script>
+</body>
+</html>

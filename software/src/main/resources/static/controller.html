@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Car Controller</title>
+<!--    <link rel="manifest" href="./manifest.json">-->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <!-- 视频显示区域 -->
+    <div id="video">视频流展示区域</div>
+
+    <!-- 油门滑块 -->
+    <div class="throttle-container">
+        <input type="range" class="throttle-input" id="throttle" min="-100" max="100" value="0">
+        <div class="throttle-value" id="throttle-value">0</div>
+    </div>
+
+    <!-- 左右转按钮 -->
+    <div class="btn-container">
+        <button id="left-btn" class="btn left-btn"></button>
+        <button id="right-btn" class="btn right-btn"></button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // 断连重试
+    const webSocket = new WebSocket("ws://localhost:8080/ws");
+    // 控制模块
+    const throttleInput = document.getElementById('throttle');
+    const throttleValue = document.getElementById('throttle-value');
+    const leftButton = document.getElementById('left-btn');
+    const rightButton = document.getElementById('right-btn');
+
+    webSocket.onopen = () => {
+        console.log("Connection established.");
+        webSocket.send("Hello Server!");
+    };
+
+    webSocket.onmessage = () => {
+        console.log("Received message: " + event.data);
+    };
+
+    webSocket.onclose = () => {
+        console.log("Connection closed.");
+    };
+
+    // 更新油门值显示
+    throttleInput.addEventListener('input', () => {
+        throttleValue.textContent = throttleInput.value;
+        sendThrottleData(throttleInput.value);
+    });
+
+    // 左转和右转按钮
+    leftButton.addEventListener('mousedown', () => sendDirectionData('left'));
+    leftButton.addEventListener('mouseup', () => sendDirectionData('left'));
+    rightButton.addEventListener('mousedown', () => sendDirectionData('right'));
+    rightButton.addEventListener('mouseup', () => sendDirectionData('right'));
+
+    // 发送油门控制数据
+    function sendThrottleData(value) {
+        console.log(`Throttle: ${value}`);
+        // 实现发送数据的逻辑
+    }
+
+    // 发送方向控制数据
+    function sendDirectionData(direction) {
+        console.log(`Direction: ${direction}`);
+        // 实现发送数据的逻辑
+    }
+
+
+</script>
+
+</body>
+</html>
