@@ -28,11 +28,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
     // 处理收到的文本消息
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String payload = message.getPayload();
-        System.out.println("Received: " + payload);
+        String msg = message.getPayload();
+        System.out.println("Received: " + msg);
 
         // 向客户端发送响应消息
-        session.sendMessage(new TextMessage("Server response: " + payload));
+        session.sendMessage(new TextMessage("Server received: " + msg));
+        this.broadcastMsg(session, msg);
     }
 
     // 处理WebSocket连接建立
@@ -47,6 +48,25 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         System.out.println("断开连接: " + session.getId());
         SESSION_SET.remove(session);
+    }
+
+    /**
+     * 广播消息，除了当前会话
+     * @param selfSession 当前session
+     * @param msg 消息
+     */
+    public void broadcastMsg(WebSocketSession selfSession, String msg) {
+        TextMessage textMessage = new TextMessage(msg);
+        SESSION_SET.forEach(session -> {
+            if (session == selfSession) {
+                return;
+            }
+            try {
+                session.sendMessage(textMessage);
+            } catch (Exception e) {
+                log.error("发送消息失败, 消息是:{}, 客户端是:{}", textMessage, session, e);
+            }
+        });
     }
 
     /**

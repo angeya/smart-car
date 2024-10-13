@@ -15,7 +15,7 @@
 
     <!-- 油门滑块 -->
     <div class="throttle-container">
-        <input type="range" class="throttle-input" id="throttle" min="-100" max="100" value="0">
+        <input type="range" class="throttle-input" id="throttle" min="-250" max="250" value="0">
         <div class="throttle-value" id="throttle-value">0</div>
     </div>
 
@@ -62,7 +62,9 @@
 
     // 发送油门控制数据
     function sendThrottleData(value) {
-        console.log(`Throttle: ${value}`);
+        const msg = `speed${value}`
+        console.log(msg);
+        webSocket.send(msg)
         // 实现发送数据的逻辑
     }
 
