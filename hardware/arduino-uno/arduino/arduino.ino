@@ -1,5 +1,3 @@
-
-
 int leftSpeed = 5;
 int rightSpeed = 6;
 
@@ -12,34 +10,63 @@ int right2 = 2;
 String prefix = "ESP-";
 String suffix = "-8266";
 
+int stopThreshold = 70;
 
-// 向前走
-void forwards(int speed) {
-  analogWrite(leftSpeed, speed);
+// 转圈速度
+int spinSpeed = 120;
+// 之前带符号的速度，正负代表方向，用于转弯后恢复速度
+int lastSignSpeed = 0;
+
+
+// 左向前
+void leftForwords() {
   digitalWrite(left1, HIGH);
   digitalWrite(left2, LOW);
+}
+// 左后退
+void leftBackwards() {
+  digitalWrite(left1, LOW);
+  digitalWrite(left2, HIGH);
+}
 
-  analogWrite(rightSpeed, speed);
+// 右向前
+void rightForwords() {
   digitalWrite(right1, HIGH);
   digitalWrite(right2, LOW);
 }
-
-// 向后走
-void backwards(int speed) {
-  analogWrite(leftSpeed, speed);
-  digitalWrite(left1, LOW);
-  digitalWrite(left2, HIGH);
-
-  analogWrite(rightSpeed, speed);
+// 右后退
+void rightBackwards() {
   digitalWrite(right1, LOW);
   digitalWrite(right2, HIGH);
 }
 
-void speedStop() {
-  analogWrite(leftSpeed, 0);
-  analogWrite(rightSpeed, 0);
+// 向前走
+void forwards(int speed) {
+  setLeftSpeed(speed);
+  leftForwords();
+  setRightSpeed(speed);
+  rightForwords();
 }
 
+// 向后走
+void backwards(int speed) {
+  setLeftSpeed(speed);
+  leftBackwards();
+  setRightSpeed(speed);
+  rightBackwards();
+}
+
+// 设置左边速度
+void setLeftSpeed(int speed) {
+  analogWrite(leftSpeed, speed);
+}
+
+// 设置右边边速度
+void setRightSpeed(int speed) {
+  analogWrite(rightSpeed, speed);
+}
+
+// 停止速度和方向
 void allStop() {
   analogWrite(leftSpeed, 0);
   digitalWrite(left1, LOW);
@@ -50,31 +77,45 @@ void allStop() {
   digitalWrite(right2, LOW);
 }
 
-void changeSpeed(int speed) {
-  if (-80 < speed && speed < 80) {
+// 改变速度
+void changeSpeed(int signSpeed) {
+  lastSignSpeed = signSpeed;
+  if (-stopThreshold < signSpeed && signSpeed < stopThreshold) {
     allStop();
     return;
   }
-  if (speed >= 80) {
-    forwards(speed);
+  if (signSpeed >= stopThreshold) {
+    forwards(signSpeed);
   } else {
-    backwards(speed);
+    // 改变方向，速度使用正值
+    backwards(-signSpeed);
   }
-
 }
 
+// 左转圈
+void leftSpin() {
+  setLeftSpeed(spinSpeed);
+  setRightSpeed(spinSpeed);
+  leftBackwards();
+  rightForwords();
+}
+// 右转圈
+void rightSpin() {
+  setLeftSpeed(spinSpeed);
+  setRightSpeed(spinSpeed);
+  rightBackwards();
+  leftForwords();
+}
 
 
 void listenMsgFromEsp8266() {
   // 如果有数据可读
   if (Serial.available() <= 0) {
-   return;
+    return;
   }
-  String receivedData = Serial.readStringUntil('\n'); // 读取串行数据
+  String receivedData = Serial.readStringUntil('\n');  // 读取串行数据
   // 去掉换行符
-  receivedData.remove(receivedData.length()-1, 1);
-  // Serial.println(receivedData.startsWith(prefix));
-  // Serial.println(receivedData.endsWith(suffix));
+  receivedData.remove(receivedData.length() - 1, 1);
   // 检查字符串是否以 "ESP" 开头并以 "8266" 结尾
   if (receivedData.startsWith(prefix) && receivedData.endsWith(suffix)) {
     String msg = receivedData.substring(prefix.length(), receivedData.length() - suffix.length());
@@ -83,19 +124,31 @@ void listenMsgFromEsp8266() {
   }
 }
 
+
+// 处理esp8266消息
 void handleMsg(String msg) {
   String speed = "speed";
   String turn = "turn";
-  if(msg.startsWith(speed)) {
+  String leftSpinStart = "leftSpinStart";
+  String rightSpinStart = "rightSpinStart";
+  String spinEnd = "spinEnd";
+
+  if (msg.startsWith(speed)) {
     Serial.println("速度是: " + msg);
     // 去掉speed标识
     msg.remove(0, speed.length());
-    int speed = msg.toInt();
-    changeSpeed(speed);
+    int signSpeed = msg.toInt();
+    changeSpeed(signSpeed);
   }
-  
-  else if(msg.startsWith(turn)) {
 
+  else if (msg.startsWith(leftSpinStart)) {
+    leftSpin();
+  }
+  else if (msg.startsWith(rightSpinStart)) {
+    rightSpin();
+  }
+  else if (msg.startsWith(spinEnd)) {
+    changeSpeed(lastSignSpeed);
   }
 }
 
@@ -118,18 +171,4 @@ void setup() {
 
 void loop() {
   listenMsgFromEsp8266();
-  // put your main code here, to run repeatedly:
-  // forwards(120);
-  // delay(5000);
-  // analogWrite(rightSpeed, 0);
-  // delay(3000);
-  // backwards(80);
-  // delay(3000);
 }
-
-
-
-
-
-
-

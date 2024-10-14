@@ -28,7 +28,7 @@
 
 <script type="text/javascript">
     // 断连重试
-    const webSocket = new WebSocket("ws://localhost:8080/ws");
+    const webSocket = new WebSocket("ws://192.168.31.123:8080/ws");
     // 控制模块
     const throttleInput = document.getElementById('throttle');
     const throttleValue = document.getElementById('throttle-value');
@@ -55,10 +55,10 @@
     });
 
     // 左转和右转按钮
-    leftButton.addEventListener('mousedown', () => sendDirectionData('left'));
-    leftButton.addEventListener('mouseup', () => sendDirectionData('left'));
-    rightButton.addEventListener('mousedown', () => sendDirectionData('right'));
-    rightButton.addEventListener('mouseup', () => sendDirectionData('right'));
+    leftButton.addEventListener('mousedown', () => turnLeftStart());
+    leftButton.addEventListener('mouseup', () => turnLeftEnd());
+    rightButton.addEventListener('mousedown', () => turnRightStart());
+    rightButton.addEventListener('mouseup', () => turnRightEnd());
 
     // 发送油门控制数据
     function sendThrottleData(value) {
@@ -68,10 +68,29 @@
         // 实现发送数据的逻辑
     }
 
-    // 发送方向控制数据
-    function sendDirectionData(direction) {
-        console.log(`Direction: ${direction}`);
-        // 实现发送数据的逻辑
+    // 左转开始
+    function turnLeftStart() {
+        const msg = 'leftSpinStart'
+        console.log(msg);
+        webSocket.send(msg)
+    }
+    // 左转开始
+    function turnLeftEnd() {
+        const msg = 'spinEnd'
+        console.log(msg);
+        webSocket.send(msg)
+    }
+    // 右转开始
+    function turnRightStart() {
+        const msg = 'rightSpinStart'
+        console.log(msg);
+        webSocket.send(msg)
+    }
+    // 右转结束
+    function turnRightEnd() {
+        const msg = 'spinEnd'
+        console.log(msg);
+        webSocket.send(msg)
     }
 
 
