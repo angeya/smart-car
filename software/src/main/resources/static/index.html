@@ -3,13 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Client</title>
+    <title>IoT Car</title>
+        <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<div class="container">
+    <!-- 视频显示区域 -->
+    <div id="video">视频流展示区域</div>
+
+    <!-- 油门滑块 -->
+    <div class="throttle-container">
+        <input type="range" class="throttle-input" id="throttle" min="-250" max="250" value="0">
+        <div class="throttle-value" id="throttle-value">0</div>
+    </div>
+
+    <!-- 左右转按钮 -->
+    <div class="btn-container">
+        <button id="left-btn" class="btn left-btn"></button>
+        <button id="right-btn" class="btn right-btn"></button>
+    </div>
+</div>
+
 <script type="text/javascript">
     // 断连重试
-    const webSocket = new WebSocket("ws://localhost:8080/ws");
+    const webSocket = new WebSocket("ws://192.168.31.123:8080/ws");
+    // 控制模块
+    const throttleInput = document.getElementById('throttle');
+    const throttleValue = document.getElementById('throttle-value');
+    const leftButton = document.getElementById('left-btn');
+    const rightButton = document.getElementById('right-btn');
 
     webSocket.onopen = () => {
         console.log("Connection established.");
@@ -23,6 +47,60 @@
     webSocket.onclose = () => {
         console.log("Connection closed.");
     };
+
+    // 更新油门值显示
+    throttleInput.addEventListener('input', () => {
+        throttleValue.textContent = throttleInput.value;
+        sendThrottleData(throttleInput.value);
+    });
+
+    // 左转和右转按钮
+    leftButton.addEventListener('mousedown', () => turnLeftStart());
+    leftButton.addEventListener('mouseup', () => turnLeftEnd());
+    rightButton.addEventListener('mousedown', () => turnRightStart());
+    rightButton.addEventListener('mouseup', () => turnRightEnd());
+
+    // 移动端
+    leftButton.addEventListener('touchstart', () => turnLeftStart());
+    leftButton.addEventListener('touchend', () => turnLeftEnd());
+    rightButton.addEventListener('touchstart', () => turnRightStart());
+    rightButton.addEventListener('touchend', () => turnRightEnd());
+
+    // 发送油门控制数据
+    function sendThrottleData(value) {
+        const msg = `speed${value}`
+        console.log(msg);
+        webSocket.send(msg)
+        // 实现发送数据的逻辑
+    }
+
+    // 左转开始
+    function turnLeftStart() {
+        const msg = 'leftSpinStart'
+        console.log(msg);
+        webSocket.send(msg)
+    }
+    // 左转开始
+    function turnLeftEnd() {
+        const msg = 'spinEnd'
+        console.log(msg);
+        webSocket.send(msg)
+    }
+    // 右转开始
+    function turnRightStart() {
+        const msg = 'rightSpinStart'
+        console.log(msg);
+        webSocket.send(msg)
+    }
+    // 右转结束
+    function turnRightEnd() {
+        const msg = 'spinEnd'
+        console.log(msg);
+        webSocket.send(msg)
+    }
+
+
 </script>
+
 </body>
 </html>

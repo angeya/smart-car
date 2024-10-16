@@ -1,20 +1,16 @@
 {
-  "name": "IoT Car Controller",
-  "short_name": "Car Controller",
+  "name": "杰乐智能小车",
+  "short_name": "杰乐智能小车",
   "description": "A web app to control an IoT car.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
+  "scope": "./",
   "background_color": "#1b1b1b",
   "theme_color": "#1b1b1b",
   "icons": [
     {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
+      "src": "icons/smart-cat.png",
+      "sizes": "256x256",
       "type": "image/png"
     }
   ]
