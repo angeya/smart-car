@@ -13,7 +13,7 @@ String suffix = "-8266";
 int stopThreshold = 70;
 
 // 转圈速度
-int spinSpeed = 120;
+int spinSpeed = 135;
 // 之前带符号的速度，正负代表方向，用于转弯后恢复速度
 int lastSignSpeed = 0;
 
